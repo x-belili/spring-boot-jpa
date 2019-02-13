@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
+//TODO --> Identify anotation Spring
 @SessionAttributes("cliente")
 public class ClienteController {
 
@@ -21,9 +22,9 @@ public class ClienteController {
     @Qualifier("clienteDaoJPA")
     private IClienteService iClienteService;
 
-    @RequestMapping(value = "/listar" , method = RequestMethod.GET)
+    @RequestMapping(value = "/listar", method = RequestMethod.GET)
     public String listar(Model model) {
-        model.addAttribute("titulo","Listado de Clientes");
+        model.addAttribute("titulo", "Listado de Clientes");
         model.addAttribute("clientes", iClienteService.findAll());
         return "listar";
     }
@@ -40,7 +41,7 @@ public class ClienteController {
     public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model) {
         Cliente cliente = null;
 
-        if (id>0) {
+        if (id > 0) {
             cliente = iClienteService.findOne(id);
         } else {
             return "redirect:listar";
@@ -53,7 +54,7 @@ public class ClienteController {
     @PostMapping("/form")
     public String guardar(@Valid Cliente cliente, BindingResult bindingResult, Model model, SessionStatus status) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("titulo","Formulario del Cliente");
+            model.addAttribute("titulo", "Formulario del Cliente");
             return "form";
         }
         iClienteService.save(cliente);
@@ -63,7 +64,7 @@ public class ClienteController {
 
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable(value = "id") Long id) {
-        if (id > 0){
+        if (id > 0) {
             iClienteService.delete(id);
         }
         return "redirect:/listar";
