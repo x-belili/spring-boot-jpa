@@ -13,6 +13,8 @@ import java.util.Date;
 @Table(name = "clientes")
 public class Cliente implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,13 +34,6 @@ public class Cliente implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createAt;
-
-    /*
-    @PrePersist
-    public void prePersist() {
-        createAt = new Date();
-    }
-    */
 
     public Long getId() {
         return id;
@@ -79,4 +74,5 @@ public class Cliente implements Serializable {
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
+
 }
