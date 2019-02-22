@@ -32,6 +32,8 @@ public class ClienteController {
     @Autowired
     private IClienteService clienteService;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @GetMapping(value = {"/ver/{id}"})
     public String ver(@PathVariable(value = "id") Long id,
                       Map<String, Object> model,
@@ -103,15 +105,21 @@ public class ClienteController {
 
         if (!foto.isEmpty()) {
 
-            String rootPath = "/opt/tmp/uploads";
+            //TODO -> research the UUID
+            String uniqueFilename = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
+            Path rootPath = Paths.get("uploads").resolve(uniqueFilename);
+
+            Path rootAbsolutPath = rootPath.toAbsolutePath();
+
+            logger.info("rootPath: " + rootPath);
+            logger.info("rootAbsolutPath: " + rootAbsolutPath);
 
             try {
-                byte[] bytes = foto.getBytes();
-                Path rutaCompleta = Paths.get(rootPath + "//" + foto.getOriginalFilename());
-                Files.write(rutaCompleta, bytes);
+
+                Files.copy(foto.getInputStream(), rootAbsolutPath);
                 flash.addFlashAttribute("info", "Has subido correctamente '" +
-                        foto.getOriginalFilename() + "'");
-                cliente.setFoto(foto.getOriginalFilename());
+                        uniqueFilename + "'");
+                cliente.setFoto(uniqueFilename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
