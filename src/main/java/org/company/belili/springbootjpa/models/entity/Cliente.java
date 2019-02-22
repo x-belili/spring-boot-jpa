@@ -12,6 +12,9 @@ import java.util.Date;
 @Entity
 @Table(name = "clientes")
 public class Cliente implements Serializable {
+    /*
+        TODO -> Analyze the implementation of 'Serializable'
+     */
 
     private static final long serialVersionUID = 1L;
 
@@ -34,6 +37,8 @@ public class Cliente implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createAt;
+
+    private String foto;
 
     public Long getId() {
         return id;
@@ -75,4 +80,23 @@ public class Cliente implements Serializable {
         this.createAt = createAt;
     }
 
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", email='" + email + '\'' +
+                ", createAt=" + createAt +
+                ", foto='" + foto + '\'' +
+                '}';
+    }
 }
