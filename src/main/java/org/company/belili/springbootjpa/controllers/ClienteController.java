@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -39,9 +40,11 @@ public class ClienteController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final static String UPLOADS_FOLDER = "uploads";
+
     @GetMapping(value = "/uploads/{filename:.+}")
     public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
-        Path pathFoto = Paths.get("uploads").resolve(filename).toAbsolutePath();
+        Path pathFoto = Paths.get(UPLOADS_FOLDER).resolve(filename).toAbsolutePath();
         logger.info("pathFoto: " + pathFoto);
         Resource resource = null;
 
@@ -132,9 +135,22 @@ public class ClienteController {
 
         if (!foto.isEmpty()) {
 
+            if (cliente.getId() != null
+                    && cliente.getId() > 0
+                    && cliente.getFoto().length() > 0) {
+
+                Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
+                File file = rootPath.toFile();
+
+                if (file.exists() && file.canRead()) {
+                    file.delete();
+                }
+            }
+
+
             //TODO -> research the UUID
             String uniqueFilename = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
-            Path rootPath = Paths.get("uploads").resolve(uniqueFilename);
+            Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(uniqueFilename);
 
             Path rootAbsolutPath = rootPath.toAbsolutePath();
 
@@ -164,8 +180,20 @@ public class ClienteController {
     public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 
         if (id > 0) {
+            Cliente cliente = clienteService.findOne(id);
+
             clienteService.delete(id);
             flash.addFlashAttribute("success", "Cliente eliminado con éxito!");
+
+            Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
+            File file = rootPath.toFile();
+
+            if (file.exists() && file.canRead()) {
+                if (file.delete()) {
+                    flash.addFlashAttribute("info", "Foto " + cliente.getFoto() +
+                            " eliminada con exito");
+                }
+            }
         }
         return "redirect:/listar";
     }
